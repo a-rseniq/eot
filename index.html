@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EndOfTransmission | V1.0</title>
+    <style>
+        :root {
+            --primary-color: #8a2be2;
+            --secondary-color: #4c1d95;
+            --text-color: #e2e8f0;
+            --background-dark: #0f0f17;
+            --background-darker: #080810;
+            --background-card: #1a1a2e;
+            --accent-color: #00b4d8;
+            --glow-color: #ff00ff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0012 0%, #1a0b2e 25%, #13111c 50%, #0d1025 75%, #0a0a18 100%);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(138, 43, 226, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 80% 70%, rgba(0, 180, 216, 0.1) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=');
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.4;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        header {
+            background-color: rgba(8, 8, 16, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #8a2be2, #ff00ff);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+        }
+        
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 0 5px rgba(138, 43, 226, 0.5);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+            padding: 5px 0;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), var(--glow-color));
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--glow-color);
+            text-shadow: 0 0 5px rgba(255, 0, 255, 0.3);
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(138, 43, 226, 0.2), transparent 70%);
+            pointer-events: none;
+        }
+        
+        .hero-content {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .status-badge {
+            background: linear-gradient(90deg, rgba(0, 180, 216, 0.1), rgba(138, 43, 226, 0.1));
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            color: var(--accent-color);
+            padding: 6px 16px;
+            border-radius: 100px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(0, 180, 216, 0.2);
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 0 5px var(--accent-color);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 180, 216, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 180, 216, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 180, 216, 0); }
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            font-weight: 800;
+            line-height: 1.2;
+            text-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+            letter-spacing: -0.5px;
+        }
+        
+        .highlight {
+            color: var(--primary-color);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, var(--primary-color), transparent);
+            opacity: 0.3;
+            z-index: -1;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            color: rgba(226, 232, 240, 0.8);
+        }
+        
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 60px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.6);
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .hero-image {
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(138, 43, 226, 0.3);
+            position: relative;
+            transition: all 0.5s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        .hero-image-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            perspective: 1000px;
+        }
+        
+        .hero-image-inner {
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+        
+        .hero-image img, .hero-image svg {
+            width: 100%;
+            height: auto;
+            display: block;
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+        }
+        
+        .hero-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary-color), transparent);
+            opacity: 0.3;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            z-index: 1;
+        }
+        
+        .hero-image:hover::before {
+            opacity: 0.5;
+        }
+        
+        .hero-image::after {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: -30%;
+            width: 160%;
+            height: 160%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+        
+        .hero-image:hover::after {
+            top: -10%;
+            left: -30%;
+        }
+
+        .features {
+            padding: 100px 0;
+            position: relative;
+        }
+        
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 70% 30%, rgba(138, 43, 226, 0.1), transparent 70%);
+            pointer-events: none;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-header h2 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+        }
+        
+        .section-header p {
+            max-width: 600px;
+            margin: 0 auto;
+            color: rgba(226, 232, 240, 0.7);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: rgba(26, 26, 46, 0.6);
+            border: 1px solid rgba(138, 43, 226, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 1;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), transparent);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(138, 43, 226, 0.3);
+            border-color: rgba(138, 43, 226, 0.4);
+        }
+        
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(255, 0, 255, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 28px;
+            position: relative;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(138, 43, 226, 0.4);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), transparent);
+            transition: width 0.3s ease;
+        }
+        
+        .feature-card:hover h3::after {
+            width: 60px;
+        }
+        
+        .feature-card p {
+            color: rgba(226, 232, 240, 0.7);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover p {
+            color: rgba(226, 232, 240, 0.9);
+        }
+
+        .Info {
+            padding: 100px 0;
+            background: linear-gradient(to bottom, rgba(8, 8, 16, 0.6), rgba(26, 11, 46, 0.6));
+            position: relative;
+        }
+        
+        .Info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 70%, rgba(0, 180, 216, 0.1), transparent 70%);
+            pointer-events: none;
+        }
+        
+        .Info-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .Info-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .Info-question {
+            padding: 20px 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .Info-answer {
+            padding: 0 0 20px;
+            color: rgba(226, 232, 240, 0.7);
+            display: none;
+            transform: translateY(-10px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .Info-item.active .Info-answer {
+            display: block;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .Info-item:hover {
+            border-bottom-color: rgba(138, 43, 226, 0.3);
+        }
+        
+        .Info-item.active {
+            border-bottom-color: rgba(138, 43, 226, 0.5);
+            background: linear-gradient(90deg, rgba(138, 43, 226, 0.05), transparent);
+            border-radius: 8px;
+            padding: 0 15px;
+            margin-left: -15px;
+            margin-right: -15px;
+            width: calc(100% + 30px);
+        }
+        
+        .Info-toggle {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+        
+        .Info-item.active .Info-toggle {
+            transform: rotate(45deg);
+        }
+
+        .cta {
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(138, 43, 226, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 80% 50%, rgba(255, 0, 255, 0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        
+        .cta h2 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .cta h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+        }
+        
+        .cta p {
+            max-width: 600px;
+            margin: 0 auto 30px;
+            color: rgba(226, 232, 240, 0.7);
+        }
+
+        footer {
+            background-color: rgba(8, 8, 16, 0.8);
+            padding: 60px 0 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(8, 8, 16, 0.9), transparent);
+            pointer-events: none;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), transparent);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: rgba(226, 232, 240, 0.7);
+            text-decoration: none;
+            transition: all 0.3s;
+            position: relative;
+            padding-left: 0;
+        }
+        
+        .footer-links a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 1px;
+            background: var(--primary-color);
+            transition: all 0.3s;
+            opacity: 0;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-color);
+            padding-left: 10px;
+        }
+        
+        .footer-links a:hover::before {
+            width: 5px;
+            opacity: 1;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(226, 232, 240, 0.5);
+            font-size: 0.9rem;
+            position: relative;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        
+        .social-link {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(0, 180, 216, 0.2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            color: white;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: -1;
+        }
+        
+        .social-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .social-link:hover::before {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-header h2 {
+                font-size: 2.5rem;
+            }
+            
+            .cta h2 {
+                font-size: 2.5rem;
+            }
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: rgba(8, 8, 16, 0.95);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                flex-direction: column;
+                gap: 0;
+                height: 0;
+                overflow: hidden;
+                transition: height 0.3s ease;
+                z-index: 100;
+            }
+            
+            .nav-links.active {
+                height: auto;
+                padding: 20px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .nav-links a {
+                display: block;
+                padding: 15px 20px;
+            }
+            
+            .navbar {
+                flex-direction: row;
+            }
+        }
+
+        .glow {
+            box-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .rotating {
+            animation: rotate 20s linear infinite;
+        }
+
+        .perspective-container {
+            perspective: 1500px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .threed-card {
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(138, 43, 226, 0.3);
+        }
+        
+        .threed-card-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .threed-card-shine {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+            z-index: 3;
+            opacity: 0;
+            transition: opacity 0.6s;
+        }
+        
+        .threed-card:hover .threed-card-shine {
+            opacity: 1;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(8, 8, 16, 0.9);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(to bottom, var(--secondary-color), var(--primary-color));
+        }
+    </style>
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <div class="logo-icon">EOT</div>
+                    <div class="logo-text">EndOfTransmission</div>
+                </div>
+                <button class="mobile-menu-toggle">☰</button>
+                <div class="nav-links">
+                    <a href="#home">Home</a>
+                    <a href="#features">Features</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#Info">Info</a>
+                    <a href="#community">Community</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    Working
+                    <span>v1</span>
+                </div>
+                <h1>Improve your <span class="highlight">Roblox Chat</span> Experience</h1>
+                <p>With the best methods for legit chat bypassing found yet.</p>
+                <div class="hero-buttons">
+                    <a href="#pricing" class="btn btn-primary">Pricing (only free exists as of now)</a>
+                    <a href="#features" class="btn btn-secondary">Features</a>
+                </div>
+                <div class="perspective-container">
+                    <div class="threed-card" id="heroCard">
+                        <div class="threed-card-content">
+                            <svg width="100%" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#13111c" />
+                                        <stop offset="100%" stop-color="#0d1025" />
+                                    </linearGradient>
+                                    <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#6d28d9" />
+                                        <stop offset="100%" stop-color="#8a2be2" />
+                                    </linearGradient>
+                                    <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                                        <stop offset="0%" stop-color="rgba(138, 43, 226, 0.8)" />
+                                        <stop offset="100%" stop-color="rgba(138, 43, 226, 0)" />
+                                    </radialGradient>
+                                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="10" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                </defs>
+                                <rect width="100%" height="100%" fill="url(#bgGradient)" />
+                                <g opacity="0.2">
+                                    <path d="M0,40 L800,40" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M0,80 L800,80" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M0,120 L800,120" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M0,160 L800,160" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M0,200 L800,200" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M0,240 L800,240" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M0,280 L800,280" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M0,320 L800,320" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M0,360 L800,360" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M40,0 L40,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M80,0 L80,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M120,0 L120,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M160,0 L160,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M200,0 L200,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M240,0 L240,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M280,0 L280,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M320,0 L320,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M360,0 L360,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M400,0 L400,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M440,0 L440,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M480,0 L480,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M520,0 L520,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M560,0 L560,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M600,0 L600,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M640,0 L640,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M680,0 L680,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M720,0 L720,400" stroke="#6d28d9" stroke-width="0.5" />
+                                    <path d="M760,0 L760,400" stroke="#6d28d9" stroke-width="0.5" />
+                                </g>
+                                <path d="M0,200 Q200,100 400,200 T800,200" fill="none" stroke="url(#purpleGradient)" stroke-width="3" filter="url(#glow)" class="floating" />
+                                <path d="M0,250 Q200,350 400,250 T800,250" fill="none" stroke="#00b4d8" stroke-width="2" opacity="0.7" class="floating" />
+                                <circle cx="400" cy="200" r="100" fill="url(#glowGradient)" opacity="0.3" class="floating" />
+                                <rect x="250" y="100" width="300" height="200" rx="10" fill="rgba(26, 26, 46, 0.8)" stroke="url(#purpleGradient)" stroke-width="2" />
+                                <rect x="260" y="110" width="280" height="30" rx="5" fill="#0f0f17" />
+                                <circle cx="275" cy="125" r="5" fill="#ff00ff" />
+                                <circle cx="295" cy="125" r="5" fill="#00b4d8" />
+                                <rect x="315" y="122" width="60" height="6" rx="3" fill="rgba(255,255,255,0.3)" />
+                                <rect x="385" y="122" width="40" height="6" rx="3" fill="rgba(255,255,255,0.3)" />
+                                <rect x="435" y="122" width="40" height="6" rx="3" fill="rgba(255,255,255,0.3)" />
+                                <rect x="260" y="150" width="280" height="140" rx="5" fill="#0a0a18" />
+                                <text x="270" y="170" fill="#8a2be2" font-family="monospace" font-size="10">$ _EndOfTransmission v1</text>
+                                <text x="270" y="190" fill="#00b4d8" font-family="monospace" font-size="10">$ Initializing method...</text>
+                                <text x="270" y="210" fill="#00b4d8" font-family="monospace" font-size="10">$ Legit method loaded.</text>
+                                <text x="270" y="230" fill="rgba(255,255,255,0.7)" font-family="monospace" font-size="10">$ Checking status...</text>
+                                <text x="270" y="250" fill="rgba(255,255,255,0.7)" font-family="monospace" font-size="10">$ All systems operational.</text>
+                                <rect x="270" y="260" width="80" height="20" rx="4" fill="#8a2be2" />
+                                <text x="280" y="274" fill="white" font-family="monospace" font-size="10">ACCESS ></text>
+                                <circle cx="150" cy="100" r="30" fill="none" stroke="url(#purpleGradient)" stroke-width="2" opacity="0.5" class="rotating" />
+                                <circle cx="650" cy="300" r="40" fill="none" stroke="#00b4d8" stroke-width="2" opacity="0.5" class="rotating" />
+                                <path d="M700,100 L730,130 L700,160 L670,130 Z" fill="none" stroke="url(#purpleGradient)" stroke-width="2" opacity="0.5" class="rotating" />
+                            </svg>
+                        </div>
+                        <div class="threed-card-shine"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2><span class="highlight">Features</span></h2>
+                <p>Discover the tools and capabilities that make EndOfTransmission the preferred choice for users worldwide.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <img class="feature-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1sb2NrLWljb24gbHVjaWRlLWxvY2siPjxyZWN0IHdpZHRoPSIxOCIgaGVpZ2h0PSIxMSIgeD0iMyIgeT0iMTEiIHJ4PSIyIiByeT0iMiIvPjxwYXRoIGQ9Ik03IDExVjdhNSA1IDAgMCAxIDEwIDB2NCIvPjwvc3ZnPg==" width="5" height="5"/>
+                    <h3>Security</h3>
+                    <p>With Roblox Chat Clearing being introduced soon, Version 1.1 will <span class="highlight">clear</span> the ChatLogs of your player.</p>
+                </div>
+                <div class="feature-card">
+                    <img class="feature-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1tZXNzYWdlLWNpcmNsZS1pY29uIGx1Y2lkZS1tZXNzYWdlLWNpcmNsZSI+PHBhdGggZD0iTTcuOSAyMEE5IDkgMCAxIDAgNCAxNi4xTDIgMjJaIi8+PC9zdmc+" width="5" height="5"/>
+                    <h3>Chat bypass</h3>
+                    <p>Seamingly <span class="highlight">LEGIT</span> chat bypass method, all that's required is joining the roblox group.</p>
+                </div>
+                <div class="feature-card">
+                    <img class="feature-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1nbG9iZS1pY29uIGx1Y2lkZS1nbG9iZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiLz48cGF0aCBkPSJNMTIgMmExNC41IDE0LjUgMCAwIDAgMCAyMCAxNC41IDE0LjUgMCAwIDAgMC0yMCIvPjxwYXRoIGQ9Ik0yIDEyaDIwIi8+PC9zdmc+" width="5" height="5"/>
+                    <h3>Universal</h3>
+                    <p>Works across all chat types, New chat or Old.</p>
+                </div>
+                <div class="feature-card">
+                    <img class="feature-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS11c2Vycy1yb3VuZC1pY29uIGx1Y2lkZS11c2Vycy1yb3VuZCI+PHBhdGggZD0iTTE4IDIxYTggOCAwIDAgMC0xNiAwIi8+PGNpcmNsZSBjeD0iMTAiIGN5PSI4IiByPSI1Ii8+PHBhdGggZD0iTTIyIDIwYzAtMy4zNy0yLTYuNS00LThhNSA1IDAgMCAwLS40NS04LjMiLz48L3N2Zz4=" width="5" height="5"/>
+                    <h3>Community</h3>
+                    <p>The kindest community with 24/7 support when needed <3</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="Info" id="Info">
+        <div class="container">
+            <div class="section-header">
+                <h2>Info to  <span class="highlight">Know</span></h2>
+                <p>Find answers about EOT</p>
+            </div>
+            <div class="Info-list">
+                <div class="Info-item">
+                    <div class="Info-question">
+                        <span>Is EndOfTransmission safe to use?</span>
+                        <div class="Info-toggle">+</div>
+                    </div>
+                    <div class="Info-answer">
+                        <p>Yes, EndOfTransmission has one of the best development teams out there for chat bypassing, our custom key system comes with Anti-Leaking methods along with our ratelimit system.</p>
+                    </div>
+                </div>
+                <div class="Info-item">
+                    <div class="Info-question">
+                        <span>How fast does it update?</span>
+                        <div class="Info-toggle">+</div>
+                    </div>
+                    <div class="Info-answer">
+                        <p>EndOfTransmission updates very often, going against all competitors with ease ;)</p>
+                    </div>
+                </div>
+                <div class="Info-item">
+                    <div class="Info-question">
+                        <span>Is it free?</span>
+                        <div class="Info-toggle">+</div>
+                    </div>
+                    <div class="Info-answer">
+                        <p>Yes, EndOfTransmission comes with 2 main types. Free: Containing legit methods etc. And Paid which will be released soon..</p>
+                    </div>
+                </div>
+                <div class="Info-item">
+                    <div class="Info-question">
+                        <span>Why do i get kicked when attempting to use Legit method?</span>
+                        <div class="Info-toggle">+</div>
+                    </div>
+                    <div class="Info-answer">
+                        <p>Legit method of EOT requires you to be in the roblox group, <span class="highlight">https://www.roblox.com/communities/35454867/CBturn</span>. Just click 'Join Community' and you are free to use Legit.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta" id="community">
+        <div class="container">
+            <h2>Join us as a<span class="highlight">Community</span></h2>
+            <p>Don't be alone, join us!</p>
+            <a href="https://discord.gg/AtfQbVQkPH" class="btn btn-primary">Discord →</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>EndOfTransmission</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#Info">Info</a></li>
+                    </ul>
+                </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 EndOfTransmission. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">E</a>
+                    <a href="#" class="social-link">O</a>
+                    <a href="#" class="social-link">T</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        mobileMenuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+        const InfoItems = document.querySelectorAll('.Info-item');
+        InfoItems.forEach(item => {
+            const question = item.querySelector('.Info-question');
+            question.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                InfoItems.forEach(InfoItem => {
+                    InfoItem.classList.remove('active');
+                });
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    navLinks.classList.remove('active');
+                }
+            });
+        });
+        const card = document.getElementById('heroCard');
+        if (card) {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const xRotation = 20 * ((y - rect.height / 2) / rect.height);
+                const yRotation = -20 * ((x - rect.width / 2) / rect.width);
+                card.style.transform = `perspective(1000px) rotateX(${xRotation}deg) rotateY(${yRotation}deg)`;
+                const shine = card.querySelector('.threed-card-shine');
+                if (shine) {
+                    const backgroundX = (x / rect.width) * 100;
+                    const backgroundY = (y / rect.height) * 100;
+                    shine.style.background = `radial-gradient(circle at ${backgroundX}% ${backgroundY}%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 80%)`;
+                }
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+                const shine = card.querySelector('.threed-card-shine');
+                if (shine) {
+                    shine.style.opacity = '0';
+                }
+            });
+            card.addEventListener('mouseenter', () => {
+                const shine = card.querySelector('.threed-card-shine');
+                if (shine) {
+                    shine.style.opacity = '1';
+                }
+            });
+        }
+        window.addEventListener('scroll', () => {
+            const scrollPosition = window.scrollY;
+            const heroSection = document.querySelector('.hero');
+            if (heroSection) {
+                heroSection.style.backgroundPosition = `center ${scrollPosition * 0.5}px`;
+            }
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach((card, index) => {
+                const speed = 0.05 + (index * 0.01);
+                const yPos = scrollPosition * speed;
+                card.style.transform = `translateY(${yPos}px)`;
+            });
+        });
+    </script>
+</body>
+</html>
