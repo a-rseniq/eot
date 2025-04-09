@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - EndOfTransmission</title>
+    <style>
+        :root {
+            --primary-color: #FFB7CE;
+            --secondary-color: #f1aac1;
+            --dark-bg: #0a0a0a;
+            --darker-bg: #050505;
+            --text-color: #ffffff;
+            --section-padding: 5rem 2rem;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+        
+        .navbar {
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(10px);
+            background: rgba(10, 10, 10, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            padding: 1.2rem 2rem;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(255, 183, 206, 0.2);
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .nav-container {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            height: 40px;
+            width: auto;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-item {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1rem;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: all 0.3s;
+        }
+        
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background: var(--primary-color);
+            transition: width 0.3s;
+            box-shadow: 0 0 10px var(--primary-color);
+            border-radius: 2px;
+        }
+        
+        .nav-item:hover::after,
+        .nav-item.active::after {
+            width: 100%;
+        }
+        
+        .nav-item:hover {
+            color: var(--primary-color);
+        }
+        
+        .section {
+            padding: var(--section-padding);
+            position: relative;
+            min-height: 80vh;
+        }
+
+        .section:nth-child(odd) {
+            background: var(--darker-bg);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .docs-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .doc-card {
+            background: rgba(15, 15, 15, 0.5);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 183, 206, 0.1);
+            border-color: rgba(255, 183, 206, 0.3);
+        }
+
+        .doc-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.5rem;
+            flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(255, 183, 206, 0.2);
+        }
+
+        .doc-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .doc-title:hover {
+            color: var(--primary-color);
+        }
+
+        .no-docs {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            padding: 2rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .doc-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .doc-icon {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWJhZGdlLWNoZWNrLWljb24gbHVjaWRlLWJhZGdlLWNoZWNrIj48cGF0aCBkPSJNMy44NSA4LjYyYTQgNCAwIDAgMSA0Ljc4LTQuNzcgNCA0IDAgMCAxIDYuNzQgMCA0IDQgMCAwIDEgNC43OCA0Ljc4IDQgNCAwIDAgMSAwIDYuNzQgNCA0IDAgMCAxLTQuNzcgNC43OCA0IDQgMCAwIDEtNi43NSAwIDQgNCAwIDAgMS00Ljc4LTQuNzcgNCA0IDAgMCAxIDAtNi43NloiLz48cGF0aCBkPSJtOSAxMiAyIDIgNC00Ii8+PC9zdmc+" alt="EOT Logo" class="logo">
+            <div class="nav-links">
+                <a href="/" class="nav-item">Home</a>
+                <a href="#" class="nav-item active">Docs</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="section">
+        <h2 class="section-title">Documentation</h2>
+        
+        <div class="docs-container">
+            <div id="docs-list">
+            </div>
+        </div>
+    </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const docsList = document.getElementById('docs-list');
+            fetchDocs();
+            async function fetchDocs() {
+                try {
+                    const response = await fetch('docs/');
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch docs directory');
+                    }
+                    
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const links = doc.querySelectorAll('a[href$=".html"]');
+                    
+                    if (links.length === 0) {
+                        docsList.innerHTML = '<div class="no-docs">No documentation files found in the docs folder.</div>';
+                        return;
+                    }
+                    
+                    links.forEach(link => {
+                        const fileName = link.getAttribute('href').replace('.html', '');
+                        if (fileName !== 'index') {
+                            const docCard = document.createElement('div');
+                            docCard.className = 'doc-card';
+                            docCard.innerHTML = `
+                                <div class="doc-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="#050505" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M14 2V8H20" stroke="#050505" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M16 13H8" stroke="#050505" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M16 17H8" stroke="#050505" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M10 9H9H8" stroke="#050505" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <a href="docs/${link.getAttribute('href')}" class="doc-title">${fileName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</a>
+                            `;
+                            docsList.appendChild(docCard);
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error fetching docs:', error);
+                    docsList.innerHTML = '<div class="no-docs">Could not load documentation. Please check if the docs folder exists.</div>';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
