@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EndOfTransmission - Plugin Builder</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --dark-bg: #121212;
+            --darker-bg: #0a0a0a;
+            --baby-pink: #f8bbd0;
+            --baby-pink-dark: #e091b9;
+            --text-light: #f5f5f5;
+            --border-radius: 8px;
+            --spacing: 16px;
+            --card-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--darker-bg);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--baby-pink);
+            box-shadow: var(--card-shadow);
+        }
+        
+        h1 {
+            color: var(--baby-pink);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .main-form {
+            background-color: var(--darker-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--baby-pink);
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #333;
+            border-radius: var(--border-radius);
+            background-color: #1e1e1e;
+            color: var(--text-light);
+            font-size: 16px;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--baby-pink);
+            box-shadow: 0 0 0 2px rgba(248, 187, 208, 0.2);
+        }
+        
+        select {
+            cursor: pointer;
+        }
+        
+        button {
+            background-color: var(--baby-pink);
+            color: #121212;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background-color: var(--baby-pink-dark);
+            transform: translateY(-2px);
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        #add-component-btn {
+            background-color: #333;
+            flex: 1;
+        }
+        
+        #add-component-btn:hover {
+            background-color: #444;
+        }
+        
+        #build-plugin-btn {
+            background-color: var(--baby-pink);
+            flex: 2;
+        }
+        
+        .components-list {
+            margin-top: 30px;
+        }
+        
+        .component-card {
+            background-color: var(--darker-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+            border-left: 4px solid var(--baby-pink);
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .component-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        
+        .component-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .component-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--baby-pink);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .remove-btn {
+            background-color: transparent;
+            color: #ff5252;
+            padding: 5px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .result-container {
+            background-color: var(--darker-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-top: 30px;
+            position: relative;
+            box-shadow: var(--card-shadow);
+            display: none;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .copy-btn {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+        
+        #result-json {
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            font-family: monospace;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #f8f8f8;
+            line-height: 1.5;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            display: none;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(248, 187, 208, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--baby-pink);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        .loading-text {
+            margin-top: 20px;
+            color: var(--baby-pink);
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+            }
+            
+            .button-container {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+        
+        .icon-preview {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            margin-right: 5px;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4caf50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            z-index: 1000;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>EndOfTransmission</h1>
+            <p>Create your own plugin</p>
+        </div>
+        
+        <div class="main-form">
+            <div class="form-group">
+                <label for="plugin-title">Plugin Title</label>
+                <input type="text" id="plugin-title" placeholder="Ttile">
+            </div>
+            
+            <div class="form-group">
+                <label for="plugin-icon">Plugin Icon (Lucide)</label>
+                <input type="text" id="plugin-icon" placeholder="Lucide icon name (e.g. cog, circle-user)">
+                <div class="icon-preview" id="main-icon-preview"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="component-type">Add Component</label>
+                <select id="component-type">
+                    <option value="" disabled selected>Select component</option>
+                    <option value="paragraph">Paragraph</option>
+                    <option value="message">Send Message</option>
+                    <option value="label">Label</option>
+                </select>
+            </div>
+            
+            <div class="button-container">
+                <button id="add-component-btn">
+                    <i data-lucide="plus-circle"></i> Add Component
+                </button>
+                <button id="build-plugin-btn">
+                    <i data-lucide="terminal"></i> Build Plugin
+                </button>
+            </div>
+        </div>
+        
+        <div class="components-list" id="components-list">
+        </div>
+        
+        <div class="result-container" id="result-container">
+            <div class="result-header">
+                <h3>Plugin Configuration:</h3>
+                <button class="copy-btn" id="copy-result">
+                    <i data-lucide="clipboard"></i> Copy
+                </button>
+            </div>
+            <div id="result-json"></div>
+        </div>
+    </div>
+    
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Building your plugin...</div>
+    </div>
+    
+    <div class="toast" id="toast">Copied to clipboard!</div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            updateMainIconPreview();
+        });
+        const pluginTitleInput = document.getElementById('plugin-title');
+        const pluginIconInput = document.getElementById('plugin-icon');
+        const componentTypeSelect = document.getElementById('component-type');
+        const addComponentBtn = document.getElementById('add-component-btn');
+        const buildPluginBtn = document.getElementById('build-plugin-btn');
+        const componentsList = document.getElementById('components-list');
+        const resultContainer = document.getElementById('result-container');
+        const resultJson = document.getElementById('result-json');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const copyResultBtn = document.getElementById('copy-result');
+        const toast = document.getElementById('toast');
+        const mainIconPreview = document.getElementById('main-icon-preview');
+        let componentCounter = 0;
+        pluginIconInput.addEventListener('input', updateMainIconPreview);
+        
+        function updateMainIconPreview() {
+            const iconName = pluginIconInput.value.trim();
+            mainIconPreview.innerHTML = '';
+            
+            if (iconName) {
+                try {
+                    const iconElement = document.createElement('i');
+                    iconElement.setAttribute('data-lucide', iconName);
+                    mainIconPreview.appendChild(iconElement);
+                    lucide.createIcons();
+                } catch (error) {
+                    console.error("Error creating icon:", error);
+                }
+            }
+        }
+        
+        addComponentBtn.addEventListener('click', () => {
+            const componentType = componentTypeSelect.value;
+            
+            if (!componentType) {
+                alert('Please select a component type');
+                return;
+            }
+            
+            addComponent(componentType);
+            componentTypeSelect.value = '';
+        });
+        
+        function addComponent(type) {
+            const componentId = `component-${componentCounter++}`;
+            const componentCard = document.createElement('div');
+            componentCard.className = 'component-card';
+            componentCard.dataset.type = type;
+            componentCard.id = componentId;
+            
+            let componentHeader = `
+                <div class="component-header">
+                    <div class="component-title">
+                        <i data-lucide="${getIconForComponentType(type)}"></i>
+                        ${capitalizeFirstLetter(type)}
+                    </div>
+                    <button class="remove-btn" onclick="removeComponent('${componentId}')">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </div>
+            `;
+            
+            let componentContent = '';
+            
+            switch (type) {
+                case 'paragraph':
+                    componentContent = `
+                        <div class="form-group">
+                            <label for="${componentId}-title">Paragraph Title</label>
+                            <input type="text" id="${componentId}-title" placeholder="Enter paragraph title">
+                        </div>
+                        <div class="form-group">
+                            <label for="${componentId}-content">Paragraph Content</label>
+                            <textarea id="${componentId}-content" rows="4" placeholder="Enter paragraph content"></textarea>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'message':
+                    componentContent = `
+                        <div class="form-group">
+                            <label for="${componentId}-message">Message</label>
+                            <input type="text" id="${componentId}-message" placeholder="Enter message text">
+                        </div>
+                    `;
+                    break;
+                    
+                case 'label':
+                    componentContent = `
+                        <div class="form-group">
+                            <label for="${componentId}-icon">Lucide Icon</label>
+                            <input type="text" id="${componentId}-icon" placeholder="Enter icon name" oninput="updateIconPreview('${componentId}')">
+                            <div class="icon-preview" id="${componentId}-icon-preview"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="${componentId}-content">Content</label>
+                            <input type="text" id="${componentId}-content" placeholder="Enter label content">
+                        </div>
+                    `;
+                    break;
+            }
+            componentCard.innerHTML = componentHeader + componentContent;
+            componentsList.appendChild(componentCard);
+            lucide.createIcons({
+                root: componentCard
+            });
+            if (type === 'label') {
+                setTimeout(() => {
+                    updateIconPreview(componentId);
+                }, 100);
+            }
+        }
+        
+        function getIconForComponentType(type) {
+            switch (type) {
+                case 'paragraph': return 'file-text';
+                case 'message': return 'message-square';
+                case 'label': return 'tag';
+                default: return 'circle';
+            }
+        }
+        
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        
+        function removeComponent(componentId) {
+            const component = document.getElementById(componentId);
+            if (component) {
+                component.remove();
+            }
+        }
+        function updateIconPreview(componentId) {
+            const iconInput = document.getElementById(`${componentId}-icon`);
+            const iconPreview = document.getElementById(`${componentId}-icon-preview`);
+            
+            if (iconInput && iconPreview) {
+                const iconName = iconInput.value.trim();
+                iconPreview.innerHTML = '';
+                
+                if (iconName) {
+                    try {
+                        const iconElement = document.createElement('i');
+                        iconElement.setAttribute('data-lucide', iconName);
+                        iconPreview.appendChild(iconElement);
+                        lucide.createIcons({
+                            root: iconPreview
+                        });
+                    } catch (error) {
+                        console.error("Error creating icon:", error);
+                    }
+                }
+            }
+        }
+
+        buildPluginBtn.addEventListener('click', async () => {
+            const title = pluginTitleInput.value.trim();
+            const icon = pluginIconInput.value.trim();
+            
+            if (!title) {
+                alert('Please enter a plugin title');
+                return;
+            }
+            
+            if (!icon) {
+                alert('Please enter a plugin icon');
+                return;
+            }
+            
+            if (componentsList.children.length === 0) {
+                alert('Please add at least one component');
+                return;
+            }
+            loadingOverlay.style.display = 'flex';
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            const pluginConfig = buildPluginConfiguration();
+            resultJson.textContent = JSON.stringify(pluginConfig, null, 2);
+            resultContainer.style.display = 'block';
+            loadingOverlay.style.display = 'none';
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        function buildPluginConfiguration() {
+            const config = {
+                title: pluginTitleInput.value.trim(),
+                icon: pluginIconInput.value.trim(),
+                components: []
+            };
+            
+            const componentCards = componentsList.querySelectorAll('.component-card');
+            
+            componentCards.forEach(card => {
+                const type = card.dataset.type;
+                const componentId = card.id;
+                
+                let component = { type };
+                
+                switch (type) {
+                    case 'paragraph':
+                        component.title = document.getElementById(`${componentId}-title`).value.trim();
+                        component.content = document.getElementById(`${componentId}-content`).value.trim();
+                        break;
+                        
+                    case 'message':
+                        component.message = document.getElementById(`${componentId}-message`).value.trim();
+                        break;
+                        
+                    case 'label':
+                        component.icon = document.getElementById(`${componentId}-icon`).value.trim();
+                        component.content = document.getElementById(`${componentId}-content`).value.trim();
+                        break;
+                }
+                
+                config.components.push(component);
+            });
+            
+            return config;
+        }
+        copyResultBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(resultJson.textContent)
+                .then(() => {
+                    toast.style.display = 'block';
+                    setTimeout(() => {
+                        toast.style.display = 'none';
+                    }, 3000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    alert('Failed to copy to clipboard');
+                });
+        });
+    </script>
+</body>
+</html>
